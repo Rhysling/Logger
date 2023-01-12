@@ -10,8 +10,8 @@ namespace Logger.Targets
 {
 	public class FileTarget : ITarget
 	{
-		string logFilePath;
-		LogLevelEnum minLevel;
+		readonly string logFilePath;
+		readonly LogLevelEnum minLevel;
 
 		public FileTarget(string logFilePath, LogLevelEnum minLevel)
 		{
@@ -20,10 +20,8 @@ namespace Logger.Targets
 
 			if (!File.Exists(logFilePath))
 			{
-				using (StreamWriter sw = File.AppendText(logFilePath))
-				{
-					sw.WriteLine(FirstLine());
-				}
+				using StreamWriter sw = File.AppendText(logFilePath);
+				sw.WriteLine(FirstLine());
 			}
 
 		}
@@ -48,13 +46,13 @@ namespace Logger.Targets
 		{
 			var sb = new StringBuilder();
 			sb.Append("LogDateGMT");
-			sb.Append("\t");
+			sb.Append('\t');
 			sb.Append("LogApplication");
-			sb.Append("\t");
+			sb.Append('\t');
 			sb.Append("LogLevel");
-			sb.Append("\t");
+			sb.Append('\t');
 			sb.Append("LogMessage");
-			sb.Append("\t");
+			sb.Append('\t');
 			sb.Append("LogIsException");
 
 			return sb.ToString();
@@ -64,13 +62,13 @@ namespace Logger.Targets
 		{
 			var sb = new StringBuilder();
 			sb.Append(item.EventDateGmt);
-			sb.Append("\t");
+			sb.Append('\t');
 			sb.Append(item.AppName ?? "None");
-			sb.Append("\t");
+			sb.Append('\t');
 			sb.Append(item.LevelName ?? "None");
-			sb.Append("\t");
+			sb.Append('\t');
 			sb.Append(item.Message ?? "None");
-			sb.Append("\t");
+			sb.Append('\t');
 			sb.Append(item.IsException ? "Yes" : "No");
 
 			return sb.ToString();

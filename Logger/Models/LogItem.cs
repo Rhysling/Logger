@@ -11,8 +11,6 @@ public class LogItem
 	{
 		this.level = level;
 		eventDate = DateTime.Now;
-		AppName = "";
-		Message = "";
 	}
 
 	public long EventTimestamp => eventDate.ToJsTime();
@@ -24,9 +22,9 @@ public class LogItem
 	public int LevelId => (int)level;
 
 
-	public string AppName { get; set; }
+	public string? AppName { get; set; }
 
-	public string Message { get; set; }
+	public string? Message { get; set; }
 
 	public bool IsException { get; set; }
 

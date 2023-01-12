@@ -10,12 +10,11 @@ namespace Logger.Targets
 	public class CloudantDbTarget : ITarget
 	{
 		private CloudantDb.Services.DbService db;
-		private bool isTesting;
+		private bool isTesting = false;
 
-		public CloudantDbTarget(string account, string dbName, string dbAuth, bool isTesting)
+		public CloudantDbTarget(string account, string dbName, string dbAuth)
 		{
 			db = new CloudantDb.Services.DbService(account, dbName, dbAuth);
-			this.isTesting = isTesting;
 		}
 
 		public async Task SaveAsync(LogItem item)

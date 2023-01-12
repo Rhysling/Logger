@@ -10,13 +10,12 @@ namespace Logger
 	{
 		private readonly string applicationName;
 		private readonly List<ITarget> targets;
-		private readonly bool isTestMode;
+		private readonly bool isTestMode = false;
 
-		public LogService(string applicationName, List<ITarget> targets, bool isTestMode)
+		public LogService(string applicationName, List<ITarget> targets)
 		{
 			this.applicationName = applicationName;
 			this.targets = targets;
-			this.isTestMode = isTestMode;
 		}
 
 		public async Task LogErrorAsync(string message, object? infoObj = null)
@@ -24,7 +23,7 @@ namespace Logger
 			var item = new LogItem(LogLevelEnum.Error)
 			{
 				Message = message,
-				IsException = false,
+				IsException = (infoObj != null) && (infoObj is Exception),
 				InfoObj = infoObj
 			};
 
@@ -36,7 +35,7 @@ namespace Logger
 			var item = new LogItem(LogLevelEnum.Warning)
 			{
 				Message = message,
-				IsException = false,
+				IsException = (infoObj != null) && (infoObj is Exception),
 				InfoObj = infoObj
 			};
 
@@ -48,7 +47,7 @@ namespace Logger
 			var item = new LogItem(LogLevelEnum.Info)
 			{
 				Message = message,
-				IsException = false,
+				IsException = (infoObj != null) && (infoObj is Exception),
 				InfoObj = infoObj
 			};
 
