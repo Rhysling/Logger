@@ -9,15 +9,16 @@ namespace Logger.Targets
 {
 	public class CloudantDbTarget : ITarget
 	{
-		private CloudantDb.Services.DbService db;
-		private bool isTesting = false;
+		private readonly CloudantDb.Services.DbService db;
+		private readonly bool isTesting;
 
-		public CloudantDbTarget(string account, string dbName, string dbAuth)
+		public CloudantDbTarget(string account, string dbName, string dbAuth, bool isTesting = false)
 		{
 			db = new CloudantDb.Services.DbService(account, dbName, dbAuth);
+			this.isTesting = isTesting;
 		}
 
-		public async Task SaveAsync(LogItem item)
+		public async Task<int> SaveAsync(LogItem item)
 		{
 			var serializer = new JsonSerializer()
 			{
@@ -33,9 +34,20 @@ namespace Logger.Targets
 			jo.Add("tbl", "log");
 
 			if (isTesting)
+			{
 				Console.WriteLine(jo.ToString());
-			else
+				return 200;
+			}
+			
+			try
+			{
 				await db.CreateItemAsync(jo.ToString());
+				return 200;
+			}
+			catch
+			{
+				return 999;
+			}
 		}
 	}
 }

@@ -19,6 +19,8 @@ namespace Logger.Tests.Services
 
 		public AS_Mailgun? Mailgun { get; set; }
 
+		public string? TestLogFilePath { get; set; }
+
 
 	}
 

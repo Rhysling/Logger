@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Logger.Models;
+using Newtonsoft.Json;
 
 namespace Logger.Targets
 {
@@ -27,17 +28,16 @@ namespace Logger.Targets
 		}
 
 
-		public async Task SaveAsync(LogItem item)
+		public async Task<int> SaveAsync(LogItem item)
 		{
 			if (minLevel == LogLevelEnum.None || item.LevelId < (int)minLevel)
-				return;
+				return 200;
 
 			using (StreamWriter sw = File.AppendText(logFilePath))
-			{
 				sw.WriteLine(BuildLine(item));
-			}
-			await Task.FromResult(0);
-			return;
+
+			await ValueTask.FromResult(0);
+			return 200;
 		}
 
 		// private ***
@@ -70,6 +70,12 @@ namespace Logger.Targets
 			sb.Append(item.Message ?? "None");
 			sb.Append('\t');
 			sb.Append(item.IsException ? "Yes" : "No");
+
+			if (item.InfoObj is not null)
+			{
+				sb.AppendLine();
+				sb.AppendLine(JsonConvert.SerializeObject(item.InfoObj, Formatting.Indented));
+			}
 
 			return sb.ToString();
 		}

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Logger.Models;
+﻿using Logger.Models;
 using Logger.Targets;
 
 namespace Logger
@@ -12,13 +9,14 @@ namespace Logger
 		private readonly List<ITarget> targets;
 		private readonly bool isTestMode = false;
 
-		public LogService(string applicationName, List<ITarget> targets)
+		public LogService(string applicationName, List<ITarget> targets, bool isTestMode = false)
 		{
 			this.applicationName = applicationName;
 			this.targets = targets;
+			this.isTestMode = isTestMode;
 		}
 
-		public async Task LogErrorAsync(string message, object? infoObj = null)
+		public async Task<int[]> LogErrorAsync(string message, object? infoObj = null)
 		{
 			var item = new LogItem(LogLevelEnum.Error)
 			{
@@ -27,10 +25,10 @@ namespace Logger
 				InfoObj = infoObj
 			};
 
-			await LogAsync(item).ConfigureAwait(false);
+			return await LogAsync(item).ConfigureAwait(false);
 		}
 
-		public async Task LogWarningAsync(string message, object? infoObj = null)
+		public async Task<int[]> LogWarningAsync(string message, object? infoObj = null)
 		{
 			var item = new LogItem(LogLevelEnum.Warning)
 			{
@@ -39,10 +37,10 @@ namespace Logger
 				InfoObj = infoObj
 			};
 
-			await LogAsync(item).ConfigureAwait(false);
+			return await LogAsync(item).ConfigureAwait(false);
 		}
 
-		public async Task LogInfoAsync(string message, object? infoObj = null)
+		public async Task<int[]> LogInfoAsync(string message, object? infoObj = null)
 		{
 			var item = new LogItem(LogLevelEnum.Info)
 			{
@@ -51,45 +49,44 @@ namespace Logger
 				InfoObj = infoObj
 			};
 
-			await LogAsync(item).ConfigureAwait(false);
+			return await LogAsync(item).ConfigureAwait(false);
 		}
 
 
-		public async Task LogAsync(Exception ex)
+		public async Task<int[]> LogAsync(Exception ex)
 		{
-			if (ex.Source == "Logger")
+			if ((ex.Source ?? "x").StartsWith("Logger"))
 			{
 				Console.WriteLine("Loger threw -- " + ex.Message);
-				Console.WriteLine(ex.StackTrace);
-				return;
+				Console.WriteLine(ex.StackTrace ?? "No stack trace.");
+				return new int[] { 999 };
 			}
 
 			var item = new LogItem(LogLevelEnum.Error)
 			{
-				Message = ex.Source + "--" + ex.Message,
+				Message = (ex.Source ?? "No Source") + "--" + ex.Message,
 				IsException = true,
 				InfoObj = new { ex.Source, ex.StackTrace }
 			};
 
-			await LogAsync(item).ConfigureAwait(false);
+			return await LogAsync(item).ConfigureAwait(false);
 		}
 
-		public async Task LogAsync(LogItem item)
+		public async Task<int[]> LogAsync(LogItem item)
 		{
 			item.AppName = applicationName;
 
 			if (isTestMode)
 			{
 				Console.WriteLine("Log-{0} on {1} -- {2}", item.LevelName, item.EventDateGmt, item.Message ?? "No msg.");
+				return Array.Empty<int>();
 			}
-			else
-			{
-				var tasks = new List<Task>();
-				foreach (var t in targets)
-					tasks.Add(t.SaveAsync(item));
+			
+			var tasks = new List<Task<int>>();
+			foreach (var t in targets)
+				tasks.Add(t.SaveAsync(item));
 
-				await Task.WhenAll(tasks.ToArray()).ConfigureAwait(false);
-			}
+			return await Task.WhenAll(tasks.ToArray()).ConfigureAwait(false);
 		}
 
 

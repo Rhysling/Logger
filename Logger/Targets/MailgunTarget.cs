@@ -32,10 +32,10 @@ namespace Logger.Targets
 			//this.isProduction = isProduction;
 		}
 
-		public async Task SaveAsync(LogItem item)
+		public async Task<int> SaveAsync(LogItem item)
 		{
 			if (item.LevelId < (int)minLevel)
-				return;
+				return 200;
 
 			var msg = new LogMessage(item, toAddresses);
 
@@ -49,9 +49,15 @@ namespace Logger.Targets
 
 			var encodedContent = new FormUrlEncodedContent(parameters);
 
-			using var res = await client.PostAsync("", encodedContent).ConfigureAwait(false);
-			res.EnsureSuccessStatusCode();
-
+			try
+			{
+				using var res = await client.PostAsync("", encodedContent).ConfigureAwait(false);
+				return (int)res.StatusCode;
+			}
+			catch
+			{
+				return 999;
+			}
 		}
 
 	}
