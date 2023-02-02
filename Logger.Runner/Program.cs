@@ -14,9 +14,10 @@ AppSettings config = configurationRoot.Get<AppSettings>();
 
 //await TestScenarios.ThrowErr();
 //await TestScenarios.ErrWithLocalTargets(config.TestLogFilePath!);
-var res = await TestScenarios.ErrWithMailTarget(config.Mailgun!.FromDomain!, config.Mailgun.AuthValue!);
+//var res = await TestScenarios.ErrWithMailTarget(config.Mailgun!.FromDomain!, config.Mailgun.AuthValue!);
 //await TestScenarios.InfoObjWithMailTarget(config.Mailgun!.FromDomain!, config.Mailgun.AuthValue!);
 //var res = await TestScenarios.InfoObjWithAllTargets(config.Mailgun!.FromDomain!, config.Mailgun.AuthValue!, config.TestLogFilePath!);
+var res = await TestScenarios.ImportantWithAllTargets(config.Mailgun!.FromDomain!, config.Mailgun.AuthValue!, config.TestLogFilePath!);
 
 if (res.Any(a => a > 299))
   Console.WriteLine("At least one target result code shows not success.");

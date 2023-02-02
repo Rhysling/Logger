@@ -16,6 +16,18 @@ namespace Logger
 			this.isTestMode = isTestMode;
 		}
 
+		public async Task<int[]> LogImportantAsync(string message, object? infoObj = null)
+		{
+			var item = new LogItem(LogLevelEnum.Important)
+			{
+				Message = message,
+				IsException = (infoObj != null) && (infoObj is Exception),
+				InfoObj = infoObj
+			};
+
+			return await LogAsync(item).ConfigureAwait(false);
+		}
+
 		public async Task<int[]> LogErrorAsync(string message, object? infoObj = null)
 		{
 			var item = new LogItem(LogLevelEnum.Error)

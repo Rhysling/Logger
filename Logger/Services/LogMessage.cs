@@ -10,7 +10,7 @@ namespace Logger.Services
 			"#5bc0de", //Info = 1,
 			"#f0ad4e", //Warn = 2,
 			"#d9534f", //Error = 3,
-			"#d953ad"  //Fatal = 4
+			"#15158f"  //Important = 4  was #d953ad
 		};
 
 		public LogMessage(Models.LogItem model, string toEmails, bool isHtml = true) : base(isHtml)
